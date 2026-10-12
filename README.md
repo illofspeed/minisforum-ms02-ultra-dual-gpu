@@ -15,6 +15,11 @@ LLM numbers for each card.
 
 One unit, one owner, BIOS 1.04, in this configuration since 10 October 2026. No wall-power or noise measurements.
 
+<img src="photos/rear-io.jpg" width="640" alt="MS-02 Ultra rear: the 10GbE card and the RTX PRO 4000's four mini-DP outputs on the left, the RTX PRO 2000's four mini-DP outputs next to the PSU inlet on the right">
+
+*Rear view. Left: the 10GbE card and the RTX PRO 4000. Right, next to the power inlet: the RTX PRO 2000 in the top
+bay. More [photos](#photos) below.*
+
 ## Why
 
 I had two MS-01s, each with one of these GPUs. The MS-02 Ultra has a CPU-connected Gen5 x16 slot. Its top bay takes
@@ -54,6 +59,32 @@ out for the GPU. I expect the change in overall power and heat to be small, but 
 (PL1/PL2), according to STH and Minisforum's guide. I run the Balanced profile with 90/110 W, TCC 90 °C and the fans
 on Performance.
 
+## Photos
+
+<table>
+<tr>
+<td width="50%"><a href="photos/top-both-bays.jpg"><img src="photos/top-both-bays.jpg" alt="Both bays from above with the lid off"></a></td>
+<td width="50%"><a href="photos/lower-bay-side.jpg"><img src="photos/lower-bay-side.jpg" alt="Lower bay from the side: Synology 10GbE card and the GPU's single-slot blower cooler"></a></td>
+</tr>
+<tr>
+<td>Both bays from above, lid off. Left: the 10GbE card and the RTX PRO 4000 with its single-slot cooler; the black
+cover in the middle is the x16 slot latch. Right: the RTX PRO 2000 in the top bay, next to the PSU.</td>
+<td>Lower bay from the side: the Synology 10GbE card (E10G18-T1) with the RTX PRO 4000's single-slot blower cooler
+next to it.</td>
+</tr>
+<tr>
+<td><a href="photos/underside-before.jpg"><img src="photos/underside-before.jpg" alt="Underside before the SSD cooling: two NVMe drives, Wi-Fi card, two of the four SO-DIMMs"></a></td>
+<td><a href="photos/underside-ssd-cooling.jpg"><img src="photos/underside-ssd-cooling.jpg" alt="Underside with the SSD cooling prototype: thermal pads and perforated copper plates on the NVMe drives"></a></td>
+</tr>
+<tr>
+<td>Underside, cover off, before the SSD cooling: the two NVMe drives with their stock heat spreaders.</td>
+<td>The same side with the SSD cooling prototype: used 1 mm thermal pads and copper heatsink plates on both drives
+(see <a href="#ssd-throttling">SSD throttling</a>).</td>
+</tr>
+</table>
+
+Labels on the RAM and the Wi-Fi card are blurred.
+
 ## Settings that mattered
 
 - **BIOS:**
@@ -92,10 +123,15 @@ both SSDs. Values are average / maximum.
   1 °C in the combined phase. I did not measure room temperature, so I can't say how it behaves in a warmer room.
 - The 10GbE card in the lower x4 slot peaked at 88 °C in the combined phase and 89 °C in the GPU-only phase.
 
-**SSD throttling.** This isn't GPU-related, but it's worth knowing:
+### SSD throttling
+
+This isn't GPU-related, but it's worth knowing:
 - **Before the fix**, sustained writes to the two-drive stripe fell from about 2.3 GB/s to 360 MB/s and eventually
   120 MB/s, while the drive in the CPU-side slot heavily throttled at 72–73 °C.
-- **The fix:** thermal pads, perforated copper plates on the drives, and swapping the drives between the slots.
+- **The fix:** thin (1 mm) thermal pads and perforated copper heatsink plates on both drives, and swapping the drives
+  between the slots ([photo](photos/underside-ssd-cooling.jpg)). This is a **prototype** built from used pads and
+  heatsinks I had at hand. I'm looking for a more permanent solution, but with these drives some cooling was clearly
+  needed.
 - **After:** a 20-minute retest averaged 2,486 MiB/s, about 2.1 GB/s sustained after the initial burst. The severe
   collapse was gone. Light throttling remained, and heavy throttling briefly returned during cooldown.
 
@@ -141,6 +177,7 @@ How it was measured:
 
 - One unit and BIOS 1.04. In this configuration since 10 October 2026; the final SSD cooling since 11 October.
 - No wall-power, noise or room-temperature measurements.
+- The SSD cooling is a prototype from used parts, not a finished solution.
 - Not tested: a card above 70 W in the top bay, the 8-pin cable, two 24 GB cards, or two stock-cooled cards.
 
 ## Files
@@ -150,7 +187,7 @@ How it was measured:
 | [`scripts/gpu-pin.sh`](scripts/gpu-pin.sh) | assign each Proxmox LXC container its own NVIDIA card by model name (dry run by default) |
 | [`scripts/aer-quiet-tbport.sh`](scripts/aer-quiet-tbport.sh) + [`systemd/aer-quiet-tbport.service`](systemd/aer-quiet-tbport.service) | mask the AER flood on the Thunderbolt root port at boot |
 | [`scripts/cpu-powersave-epp.sh`](scripts/cpu-powersave-epp.sh) + [`systemd/cpu-powersave-epp.service`](systemd/cpu-powersave-epp.service) | `powersave` governor with EPP `balance_performance` |
-| [`photos/`](photos/) | build photos |
+| [`photos/`](photos/) | build photos (shown [above](#photos)) |
 
 Install the scripts to `/usr/local/sbin/` and the units to `/etc/systemd/system/`, then `systemctl enable --now` the
 units. Read each script first: they write to PCI configuration space or to the Proxmox container configuration.
