@@ -10,8 +10,8 @@ LLM numbers for each card.
 - A 2-hour load test with every guest running finished with **zero request errors**: CPU, both GPUs doing real LLM
   inference, and both SSDs, all at once for 25 minutes. The only GPU limiter reported was the power cap.
 - **The top-bay card runs hot**: 90–91 °C on average under load, 94 °C peak.
-- For these models and settings, **one model per card worked well**. Splitting one model across both cards with my
-  engine cut prefill to about 40 % and crashed under parallel requests.
+- For these models and settings, **one model per card worked well**. Splitting one model across both cards with the
+  Strata engine I use cut prefill to roughly 40–60 % of a single card, and the engine crashed under parallel requests.
 
 One unit, one owner, BIOS 1.04, in this configuration since 10 October 2026. No wall-power or noise measurements.
 
@@ -27,7 +27,7 @@ an ordinary card at Gen4 x4 once Minisforum's 25G card is out. So I tried puttin
 
 I am not the first to put two GPUs in an MS-02:
 [this build](https://www.reddit.com/r/MINISFORUM/comments/1sv0a8w/ms02_ultra_dual_gpu_setup/) (April 2026) used an
-RTX 5060 LP plus a single-slot RTX 4000 Ada, with a 600 W PSU swap. Mine is the 70 W Blackwell pair on the stock PSU.
+RTX 5060 LP plus an RTX 4000 SFF Ada converted to a single-slot cooler, with a 600 W PSU swap. Mine is the 70 W Blackwell pair on the stock PSU.
 Someone asked about exactly this combination
 [here](https://www.reddit.com/r/MINISFORUM/comments/1so0c6v/running_dual_gpus_on_the_ms02_ultra/).
 
@@ -39,10 +39,11 @@ Someone asked about exactly this combination
 | RAM | 4 × 48 GB DDR5 SO-DIMM, non-ECC = 192 GB | runs at 4400 MT/s with two modules per channel |
 | GPU 1 | NVIDIA RTX PRO 4000 Blackwell SFF, 24 GB | lower CPU-connected slot (Gen5 x16 physical); observed **Gen5 x8** under load |
 | GPU 2 | NVIDIA RTX PRO 2000 Blackwell, 16 GB | **top bay**; observed **Gen4 x4** under load |
-| GPU coolers | [n3rdware](https://n3rdware.com) single-slot coolers for both cards (EUR 89 each, June 2026) | the stock coolers are dual-slot |
+| GPU coolers | [n3rdware](https://n3rdware.com) single-slot coolers for both cards (EUR 89 each, June 2026, fitted earlier for my MS-01s) | the stock coolers are dual-slot |
 | Lower x4 slot | 10GbE RJ45 card with an x4 edge | the slot is closed-ended x4 with components right behind it, so longer x8/x16-edge cards do not fit directly |
 | Storage | 2 × 8 TB NVMe on the board | one in the CPU-connected slot, one in the chipset slot |
 | PSU | stock internal unit | both GPUs on slot power only, no 8-pin |
+| SSD cooling | 2 × Thermal Grizzly Minus Pad 8 (120 × 20 × 1 mm) + two cheap copper heatsinks | a prototype, see [SSD throttling](#ssd-throttling) |
 
 **Fit.** The top bay only has room for a single-slot card (I estimated a gap of about 28 mm), so the PRO 2000 needs
 the thin cooler there. In the lower bay a dual-slot card would also cover the adjacent x4 slot, which I use for the
@@ -74,12 +75,12 @@ next to it.</td>
 </tr>
 <tr>
 <td><a href="photos/underside-before.jpg"><img src="photos/underside-before.jpg" alt="Underside before the SSD cooling: two NVMe drives, Wi-Fi card, two of the four SO-DIMMs"></a></td>
-<td><a href="photos/underside-ssd-cooling.jpg"><img src="photos/underside-ssd-cooling.jpg" alt="Underside with the SSD cooling prototype: thermal pads and perforated copper plates on the NVMe drives"></a></td>
+<td><a href="photos/underside-ssd-cooling.jpg"><img src="photos/underside-ssd-cooling.jpg" alt="Underside with the SSD cooling prototype: thermal pad pieces on both NVMe drives and two copper heatsinks"></a></td>
 </tr>
 <tr>
 <td>Underside, cover off, before the SSD cooling: the two NVMe drives with their stock heat spreaders.</td>
-<td>The same side with the SSD cooling prototype: used 1 mm thermal pads and copper heatsink plates on both drives
-(see <a href="#ssd-throttling">SSD throttling</a>).</td>
+<td>The same side with the SSD cooling prototype: Thermal Grizzly Minus Pad 8 pieces (1 mm) on both drives and two
+cheap copper heatsinks (see <a href="#ssd-throttling">SSD throttling</a>).</td>
 </tr>
 </table>
 
@@ -88,7 +89,8 @@ Labels on the RAM and the Wi-Fi card are blurred.
 ## Settings that mattered
 
 - **BIOS:**
-  - Internal Graphics = Enabled. This keeps the iGPU for media transcoding next to the two NVIDIA cards.
+  - Internal Graphics = Enabled, Primary Display = IGFX. With the GPUs installed the iGPU was disabled until I set
+    this. It keeps the iGPU for media transcoding next to the two NVIDIA cards.
   - VT-d on.
   - Secure Boot off after the initial boot violation. Setting up a signed boot chain and signed NVIDIA modules is
     still to do.
@@ -126,14 +128,17 @@ both SSDs. Values are average / maximum.
 ### SSD throttling
 
 This isn't GPU-related, but it's worth knowing:
-- **Before the fix**, sustained writes to the two-drive stripe fell from about 2.3 GB/s to 360 MB/s and eventually
-  120 MB/s, while the drive in the CPU-side slot heavily throttled at 72–73 °C.
-- **The fix:** thin (1 mm) thermal pads and perforated copper heatsink plates on both drives, and swapping the drives
-  between the slots ([photo](photos/underside-ssd-cooling.jpg)). This is a **prototype** built from used pads and
-  heatsinks I had at hand. I'm looking for a more permanent solution, but with these drives some cooling was clearly
-  needed.
+- **Before the fix** (BIOS fans on Quiet and the CPU on Silent 55/65 W at the time), sustained writes to the two-drive
+  stripe fell from about 2.3 GB/s to 360 MB/s and eventually 120 MB/s, while the drive in the CPU-side slot heavily
+  throttled at 72–73 °C. Switching the BIOS to Performance fans and the Balanced CPU profile, before any cooling
+  hardware change, still left that drive heavily throttling, with the stripe at about 0.5 GB/s after the burst.
+- **The fix:** two Thermal Grizzly Minus Pad 8 strips (120 × 20 × 1 mm), cut into pieces on both drives, and two
+  cheap copper heatsinks, plus swapping the drives between the slots ([photo](photos/underside-ssd-cooling.jpg)),
+  with the fans on Performance. This is a **prototype**. I'm looking for a more permanent solution, but
+  with these drives some cooling was clearly needed.
 - **After:** a 20-minute retest averaged 2,486 MiB/s, about 2.1 GB/s sustained after the initial burst. The severe
-  collapse was gone. Light throttling remained, and heavy throttling briefly returned during cooldown.
+  collapse was gone. The CPU-slot drive still sat at its ~72 °C throttle point with light throttling most of the
+  time, and heavy throttling briefly returned during cooldown.
 
 ## Local LLMs on the two cards
 
@@ -157,7 +162,8 @@ How it was measured:
 - The last column is the elapsed time for two simultaneous requests, each with a ~16k-token prompt and 256 output
   tokens.
 - The automatic split put 6.3 GB on the smaller card. Expert-cache capacity grew from 13,038 to 14,029 experts
-  (+7.6 %), while prefill fell to 56 % of the single-card baseline at 2k and about 40 % at 32k and 100k. These tests
+  (+7.6 %), while prefill fell to 56–63 % of a single card at 2k and about 40–46 % at 32k and 100k (the range covers the
+  default-I/O and mmap single-card rows). These tests
   did not isolate the cause of the slowdown.
 
 **Other models, one card each** (Ollama; decode tok/s, plus prefill where measured):
@@ -177,7 +183,7 @@ How it was measured:
 
 - One unit and BIOS 1.04. In this configuration since 10 October 2026; the final SSD cooling since 11 October.
 - No wall-power, noise or room-temperature measurements.
-- The SSD cooling is a prototype from used parts, not a finished solution.
+- The SSD cooling is a prototype (thermal pads and cheap copper heatsinks), not a finished solution.
 - Not tested: a card above 70 W in the top bay, the 8-pin cable, two 24 GB cards, or two stock-cooled cards.
 
 ## Files
@@ -201,8 +207,9 @@ units. Read each script first: they write to PCI configuration space or to the P
 - [Minisforum MS-02 Ultra guide](https://github.com/minisforum-docs/MS-02-Ultra/blob/main/Docs/English/02-Ultra-BaseGuide.md)
   and [known issues](https://github.com/minisforum-docs/MS-02-Ultra/blob/main/Docs/English/02-Ultra-KnowIssue.md)
 
-*An AI assistant helped me collect the measurements from my logs and draft this write-up. The build, the tests and
-the numbers are mine.*
+*Disclosure: an AI assistant wrote the helper scripts and the load-test harness, ran the tests on my box at my
+request, pulled the numbers from the logs and drafted this write-up. The hardware, the build and the decisions are
+mine.*
 
 ## License
 
