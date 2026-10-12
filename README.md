@@ -11,7 +11,8 @@ LLM numbers for each card.
   inference, and both SSDs, all at once for 25 minutes. The only GPU limiter reported was the power cap.
 - **The top-bay card runs hot**: 90–91 °C on average under load, 94 °C peak.
 - For these models and settings, **one model per card worked well**. Splitting one model across both cards with the
-  Strata engine I use cut prefill to roughly 40–60 % of a single card, and the engine crashed under parallel requests.
+  Strata engine I use cut prefill to roughly 40–60 % of a single card, and simultaneous requests failed with an
+  engine error (single requests were fine).
 
 One unit, one owner, BIOS 1.04, in this configuration since 10 October 2026. No wall-power or noise measurements.
 
@@ -154,13 +155,19 @@ and streams the rest from system RAM; its container had 64 GB of the host's 192 
 | One GPU, parallel 1, default I/O | 1,159 / 1,690 / 1,553 | 64.6 | 32.5 s |
 | One GPU, parallel 2, mmap | 1,030 / 1,525 / 1,469 | 60.1 | 35.4 s |
 | Automatic split over both GPUs, parallel 1, mmap | 647 / 695 / 613 | 60.6 | 62.7 s |
-| Automatic split, parallel 2 or 4, mmap | ~600 / ~640 / ~600 | 65–66 | crashed |
+| Automatic split, parallel 2 or 4, mmap | ~600 / ~640 / ~600 | 65–66 | failed (engine error, see below) |
 
 How it was measured:
 - Prefill and decode use single requests. Decode is the median of three short-prompt runs, each asking for 512
   output tokens.
 - The last column is the elapsed time for two simultaneous requests, each with a ~16k-token prompt and 256 output
   tokens.
+- **Split with 2 or 4 parallel slots:** single requests ran normally; the prefill and decode figures in that row come
+  from them. Every test with simultaneous requests failed. The engine reported "verify batch: layer 47 never rang",
+  exited and restarted itself (7 times in each of the two test phases), so those tests produced almost no output. In
+  a follow-up with two coding agents at once, one agent's request failed with the same error after about a minute;
+  the other agent finished its task. This is an open Strata issue
+  ([#929](https://github.com/Niko1221/Strata/issues/929)) in version 0.1.39. On a single card, parallel 2 worked.
 - The automatic split put 6.3 GB on the smaller card. Expert-cache capacity grew from 13,038 to 14,029 experts
   (+7.6 %), while prefill fell to 56–63 % of a single card at 2k and about 40–46 % at 32k and 100k (the range covers the
   default-I/O and mmap single-card rows). These tests
