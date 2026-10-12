@@ -203,8 +203,9 @@ How it was measured:
 | [`scripts/cpu-powersave-epp.sh`](scripts/cpu-powersave-epp.sh) + [`systemd/cpu-powersave-epp.service`](systemd/cpu-powersave-epp.service) | `powersave` governor with EPP `balance_performance` |
 | [`photos/`](photos/) | build photos (shown [above](#photos)) |
 
-Install the scripts to `/usr/local/sbin/` and the units to `/etc/systemd/system/`, then `systemctl enable --now` the
-units. Read each script first: they write to PCI configuration space or to the Proxmox container configuration.
+On my host the scripts live in `/usr/local/sbin/` and the units in `/etc/systemd/system/`, enabled at boot. They are
+small (about 75 lines in total) and specific to this box: they write to PCI configuration space or to the Proxmox
+container configuration, so read them before reusing anything.
 
 ## Links
 
@@ -215,8 +216,9 @@ units. Read each script first: they write to PCI configuration space or to the P
 - [Minisforum MS-02 Ultra guide](https://github.com/minisforum-docs/MS-02-Ultra/blob/main/Docs/English/02-Ultra-BaseGuide.md)
   and [known issues](https://github.com/minisforum-docs/MS-02-Ultra/blob/main/Docs/English/02-Ultra-KnowIssue.md)
 
-*Disclosure: an AI assistant wrote the helper scripts and the load-test harness, ran the tests on my box at my
-request, pulled the numbers from the logs and drafted this write-up. The hardware, the build and the decisions are
+*Disclosure: I used an AI assistant throughout. It wrote the three small config scripts and two systemd units in this
+repo (about 75 lines of Proxmox and sysfs settings), wrote and ran the load-test scripts (not published) on my box at
+my request, pulled the numbers from the logs and drafted this write-up. The hardware, the build and the decisions are
 mine.*
 
 ## License
