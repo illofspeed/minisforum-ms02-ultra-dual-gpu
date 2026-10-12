@@ -1,0 +1,11 @@
+[Unit]
+Description=CPU governor powersave + EPP balance_performance
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/cpu-powersave-epp.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

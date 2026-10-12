@@ -1,0 +1,10 @@
+[Unit]
+Description=Mask AER noise from the MS-02 Thunderbolt root port 80:1b.4
+After=systemd-udev-settle.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/aer-quiet-tbport.sh
+
+[Install]
+WantedBy=multi-user.target
