@@ -43,7 +43,7 @@ Someone asked about exactly this combination
 | Lower x4 slot | 10GbE RJ45 card with an x4 edge | the slot is closed-ended x4 with components right behind it, so longer x8/x16-edge cards do not fit directly |
 | Storage | 2 × 8 TB NVMe on the board | one in the CPU-connected slot, one in the chipset slot |
 | PSU | stock internal unit | both GPUs on slot power only, no 8-pin |
-| SSD cooling | 2 × Thermal Grizzly Minus Pad 8 (120 × 20 × 1 mm) + two cheap copper heatsinks | a prototype, see [SSD throttling](#ssd-throttling) |
+| SSD cooling | 4 pieces of 1 mm thermal pad (cut from two 120 × 20 mm strips of Thermal Grizzly Minus Pad 8) + two cheap copper heatsinks | a prototype, see [SSD throttling](#ssd-throttling) |
 
 **Fit.** The top bay only has room for a single-slot card (I estimated a gap of about 28 mm), so the PRO 2000 needs
 the thin cooler there. In the lower bay a dual-slot card would also cover the adjacent x4 slot, which I use for the
@@ -75,12 +75,12 @@ next to it.</td>
 </tr>
 <tr>
 <td><a href="photos/underside-before.jpg"><img src="photos/underside-before.jpg" alt="Underside before the SSD cooling: two NVMe drives, Wi-Fi card, two of the four SO-DIMMs"></a></td>
-<td><a href="photos/underside-ssd-cooling.jpg"><img src="photos/underside-ssd-cooling.jpg" alt="Underside with the SSD cooling prototype: thermal pad pieces on both NVMe drives and two copper heatsinks"></a></td>
+<td><a href="photos/underside-ssd-cooling.jpg"><img src="photos/underside-ssd-cooling.jpg" alt="Underside with the SSD cooling prototype: four thermal pad pieces on the two NVMe drives and two copper heatsinks"></a></td>
 </tr>
 <tr>
 <td>Underside, cover off, before the SSD cooling: the two NVMe drives with their stock heat spreaders.</td>
-<td>The same side with the SSD cooling prototype: Thermal Grizzly Minus Pad 8 pieces (1 mm) on both drives and two
-cheap copper heatsinks (see <a href="#ssd-throttling">SSD throttling</a>).</td>
+<td>The same side with the SSD cooling prototype: four pieces of 1 mm thermal pad (Thermal Grizzly Minus Pad 8) on the
+two drives and two cheap copper heatsinks (see <a href="#ssd-throttling">SSD throttling</a>).</td>
 </tr>
 </table>
 
@@ -132,9 +132,9 @@ This isn't GPU-related, but it's worth knowing:
   stripe fell from about 2.3 GB/s to 360 MB/s and eventually 120 MB/s, while the drive in the CPU-side slot heavily
   throttled at 72–73 °C. Switching the BIOS to Performance fans and the Balanced CPU profile, before any cooling
   hardware change, still left that drive heavily throttling, with the stripe at about 0.5 GB/s after the burst.
-- **The fix:** two Thermal Grizzly Minus Pad 8 strips (120 × 20 × 1 mm), cut into pieces on both drives, and two
-  cheap copper heatsinks, plus swapping the drives between the slots ([photo](photos/underside-ssd-cooling.jpg)),
-  with the fans on Performance. This is a **prototype**. I'm looking for a more permanent solution, but
+- **The fix:** four pieces of 1 mm thermal pad on the two drives (cut from two 120 × 20 mm strips of Thermal Grizzly
+  Minus Pad 8) and two cheap copper heatsinks, plus swapping the drives between the slots
+  ([photo](photos/underside-ssd-cooling.jpg)), with the fans on Performance. This is a **prototype**. I'm looking for a more permanent solution, but
   with these drives some cooling was clearly needed.
 - **After:** a 20-minute retest averaged 2,486 MiB/s, about 2.1 GB/s sustained after the initial burst. The severe
   collapse was gone. The CPU-slot drive still sat at its ~72 °C throttle point with light throttling most of the
