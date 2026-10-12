@@ -166,8 +166,9 @@ How it was measured:
   from them. Every test with simultaneous requests failed. The engine reported "verify batch: layer 47 never rang",
   exited and restarted itself (7 times in each of the two test phases), so those tests produced almost no output. In
   a follow-up with two coding agents at once, one agent's request failed with the same error after about a minute;
-  the other agent finished its task. This is an open Strata issue
-  ([#929](https://github.com/Niko1221/Strata/issues/929)) in version 0.1.39. On a single card, parallel 2 worked.
+  the other agent finished its task. The same error (with a different layer number) is reported in the open Strata
+  issue [#929](https://github.com/Niko1221/Strata/issues/929), also on version 0.1.39 but with other GPUs. On a single
+  card, parallel 2 worked.
 - The automatic split put 6.3 GB on the smaller card. Expert-cache capacity grew from 13,038 to 14,029 experts
   (+7.6 %), while prefill fell to 56–63 % of a single card at 2k and about 40–46 % at 32k and 100k (the range covers the
   default-I/O and mmap single-card rows). These tests
