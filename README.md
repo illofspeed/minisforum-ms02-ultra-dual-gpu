@@ -37,7 +37,7 @@ Someone asked about exactly this combination
 | Part | What | Notes |
 |---|---|---|
 | Box | Minisforum MS-02 Ultra, Core Ultra 9 285HX barebone | BIOS 1.04, the latest available when I set it up |
-| RAM | 4 × 48 GB DDR5 SO-DIMM, non-ECC = 192 GB | runs at 4400 MT/s with two modules per channel |
+| RAM | 4 × 48 GB DDR5-5600 SO-DIMM (Crucial CT48G56C46S5, dual-rank), non-ECC = 192 GB | runs at 4400 MT/s (read with `dmidecode -t memory`): two dual-rank modules per channel; one module per channel would run at 5600 with half the capacity |
 | GPU 1 | NVIDIA RTX PRO 4000 Blackwell SFF, 24 GB | lower CPU-connected slot (Gen5 x16 physical); observed **Gen5 x8** under load |
 | GPU 2 | NVIDIA RTX PRO 2000 Blackwell, 16 GB | **top bay**; observed **Gen4 x4** under load |
 | GPU coolers | [n3rdware](https://n3rdware.com) single-slot coolers for both cards (EUR 89 each, June 2026, fitted earlier for my MS-01s) | the stock coolers are dual-slot |
